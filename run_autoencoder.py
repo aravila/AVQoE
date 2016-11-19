@@ -4,6 +4,7 @@ import matplotlib
 matplotlib.use('Agg') 
 import matplotlib.pyplot as plot
 import tables
+import time
 
 def train_generator(filepath, no_train, batch_size):
     while 1:
@@ -39,10 +40,10 @@ def get_model(mode = 0, hdf5train = '', hdf5valid = '', no_train = 0, no_valid =
                             nb_val_samples=no_valid,
                             callbacks=[])
     print(hist.history)
-    encoder.save("../models/encoder_%s.hdf5"%(modetype)) 
-    autoencoder.save("../models/autoencoder_%s.hdf5"%(modetype))
+    encoder.save("../models/encoder_%s_%s.hdf5"%(modetype, time.strftime("%Y-%m-%d_%H:%M")))
+    autoencoder.save("../models/autoencoder_%s_%s.hdf5"%(modetype, time.strftime("%Y-%m-%d_%H:%M")))
     fig = plot.figure()
-    lossFig = "../results/auto_%s_loss.png"%(modetype)
+    lossFig = "../results/auto_%s_loss_%s.png"%(modetype, time.strftime("%Y-%m-%d_%H:%M"))
     plot.plot(hist.history['loss'], label='Train loss')
 #    plot.plot(hist.history['val_loss'], label='Valid loss')
     plot.ylabel('Loss')
