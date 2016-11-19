@@ -2,7 +2,7 @@ For usage:
 python run_autoencoder.py
 
 For video model:
-THEAN_OFLAGS=device=gpu0 python run_autoencoder.py 0 "'/home/zahidakhtar/muse02/anderson/Video/vqoe.hdf5'" 150000 25344 16
+THEAN_OFLAGS=device=gpu0 python run_autoencoder.py 0 "'./vfeatures/vqoe_train.hdf5'"  "'./vfeatures/vqoe_valid.hdf5'" 200000 50000 25344
 
 For audio model:
-THEANO_FLAGS=device=gpu0 python run_autoencoder.py 1 "'../afeatures/aqoe.hdf5'" 150000 257 32
+THEANO_FLAGS=device=gpu0 python run_autoencoder.py 1 “’./afeatures/aqoe_train.hdf5'"  “’./afeatures/aqoe_valid.hdf5'" 120000 30000 257
