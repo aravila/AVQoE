@@ -28,7 +28,7 @@ class BuildAudioModel(object):
     def LSTMAutoencoder(self, input_dim, timesteps = 10, latent_dim = 128, hid_factor = 2):
 
         input_val = Input(shape=(timesteps, input_dim))
-        encoded = LSTM(latent_dim)(input_val)
+        encoded = LSTM(latent_dim, return_sequences=True)(input_val)
 
         decoded = RepeatVector(timesteps)(encoded)
         decoded = LSTM(input_dim, return_sequences=True)(decoded)
