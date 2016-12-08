@@ -6,29 +6,27 @@ import matplotlib.pyplot as plot
 import tables
 import time
 
-def train_generator(filepath, no_train, batch_size, time_step):
+def train_generator(filepath, no_train, batch_size):
     while 1:
         hdf5_file = tables.open_file(filepath, mode='r')
         for i in range(0,round(no_train/batch_size)):
             data = hdf5_file.root.train[i*batch_size:i*batch_size+batch_size+time_step]
-            data_step = data.reshape(batch_size, time_step, data.shape[1])
-            yield (data_step, data)
+            yield (data, data)
         hdf5_file.close()
 
-def validation_generator(filepath, no_valid, batch_size, time_step):
+def validation_generator(filepath, no_valid, batch_size):
     while 1:
         hdf5_file = tables.open_file(filepath, mode='r')
         for i in range(0, round(no_valid / batch_size)):
-            data = hdf5_file.root.valid[i*batch_size:i*batch_size+batch_size*time_step]
-            data_step = data.reshape(batch_size, time_step, data.shape[1])
-            yield (data_step, data)
+            data = hdf5_file.root.valid[i*batch_size:i*batch_size+batch_size]
+            yield (data, data)
         hdf5_file.close()
 
 def get_input_dim(filepath):
     hdf5_file = tables.open_file(filepath, mode='r')
     return hdf5_file.root.train.shape[1]
 
-def get_model(mode = 0, hdf5train = '', hdf5valid = '', no_train = 0, no_valid = 0, batch_size = 16, time_step = 100, nepoch = 50, early = 5):
+def get_model(mode = 0, hdf5train = '', hdf5valid = '', no_train = 0, no_valid = 0, batch_size = 16, nepoch = 50, early = 5):
 
     if (mode == 0):
         model = BuildVideoModel()
@@ -39,9 +37,9 @@ def get_model(mode = 0, hdf5train = '', hdf5valid = '', no_train = 0, no_valid =
 
     input_dim = get_input_dim(hdf5train)
 
-    encoder, autoencoder = model.LSTMAutoencoder(batch_size, time_step, input_dim)
+    encoder, autoencoder = model.LSTMAutoencoder(batch_size, input_dim)
 
-    hist = autoencoder.fit_generator(train_generator(hdf5train, no_train, batch_size, time_step),
+    hist = autoencoder.fit_generator(train_generator(hdf5train, no_train, batch_size),
                             nb_epoch=nepoch,
                             samples_per_epoch=no_train,
                             validation_data=validation_generator(hdf5valid, no_valid, batch_size*(no_valid/no_train)),
@@ -63,9 +61,9 @@ def get_model(mode = 0, hdf5train = '', hdf5valid = '', no_train = 0, no_valid =
 
 
 def run_model():
-    if(len(sys.argv) < 7):
+    if(len(sys.argv) < 6):
         print("\nUsage:")
-        print("python run_autoencoder.py 0 \"'./vfeatures/vqoe_train.hdf5'\"  \"'./vfeatures/vqoe_valid.hdf5'\" 200000 50000 16 100 50 5")
+        print("python run_autoencoder.py 0 \"'./vfeatures/vqoe_train.hdf5'\"  \"'./vfeatures/vqoe_valid.hdf5'\" 200000 50000 16 50 5")
         print("Where")
         print("param1: '0' for video and '1' for audio")
         print("param2: hdf5 database path for training")
@@ -73,9 +71,8 @@ def run_model():
         print("param4: number of train instances")
         print("param5: number of validation instances")
         print("param6: batch size (default is 16)")
-        print("param7: Time step (default is 100)")
-        print("param8: number of epochs (default is 50)")
-        print("param9: early_stopping (default is 5)\n")
+        print("param7: number of epochs (default is 50)")
+        print("param8: early_stopping (default is 5)\n")
         exit()
 
     str = ""
