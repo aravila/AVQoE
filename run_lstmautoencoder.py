@@ -41,7 +41,7 @@ def get_model(mode = 0, hdf5train = '', hdf5valid = '', no_train = 0, no_valid =
 
     encoder, autoencoder = model.LSTMAutoencoder(input_dim)
 
-    hist = autoencoder.fit_generator(train_generator(hdf5train, no_train, batch_size),
+    hist = autoencoder.fit_generator(train_generator(hdf5train, no_train, batch_size, 100),
                             nb_epoch=nepoch,
                             samples_per_epoch=no_train,
                             validation_data=validation_generator(hdf5valid, no_valid, batch_size*(no_valid/no_train)),
