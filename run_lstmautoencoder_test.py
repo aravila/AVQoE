@@ -21,7 +21,7 @@ def validation_generator(filepath, no_valid, batch_size, time_step):
         for i in range(0, round(no_valid / batch_size)):
             data = hdf5_file.root.valid[i*batch_size:i*batch_size+batch_size*time_step]
             data_step = data.reshape(batch_size, time_step, data.shape[1])
-            yield (data, data)
+            yield (data_step, data)
         hdf5_file.close()
 
 def get_input_dim(filepath):
