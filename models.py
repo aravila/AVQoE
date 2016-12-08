@@ -25,10 +25,27 @@ class BuildAudioModel(object):
         return encoder, autoencoder
 
 
+    def LSTMAutoencoder_test(self, batch_size, timesteps, input_dim, hid_factor = 2):
+
+        input_val = Input(batch_input_shape=(batch_size, timesteps, input_dim))
+        encoded = LSTM(128)(input_val)
+
+        decoded = RepeatVector(timesteps)(encoded)
+        decoded = LSTM(input_dim, return_sequences=True)(decoded)
+
+        autoencoder = Model(input=input_val, output=decoded)
+        encoder = Model(input=input_val, output=encoded)
+
+        rms = RMSprop(lr=0.001)
+
+        autoencoder.compile(optimizer=rms, loss='mean_squared_error')
+
+        return encoder, autoencoder
+
     def LSTMAutoencoder(self, timesteps, input_dim, hid_factor = 2):
 
         input_val = Input(shape=(timesteps, input_dim))
-        encoded = LSTM(int(input_dim/hid_factor))(input_val)
+        encoded = LSTM(128)(input_val)
 
         decoded = RepeatVector(timesteps)(encoded)
         decoded = LSTM(input_dim, return_sequences=True)(decoded)
