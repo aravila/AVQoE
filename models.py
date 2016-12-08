@@ -27,7 +27,7 @@ class BuildAudioModel(object):
 
     def LSTMAutoencoder_test(self, batch_size, timesteps, input_dim, hid_factor = 2):
 
-        input_val = Input(batch_input_shape=(batch_size, timesteps, input_dim))
+        input_val = Input(batch_input_shape=(None, timesteps, input_dim))
         encoded = LSTM(128)(input_val)
 
         decoded = RepeatVector(timesteps)(encoded)
