@@ -25,10 +25,13 @@ class BuildAudioModel(object):
         return encoder, autoencoder
 
 
-    def LSTMAutoencoder(self, input_dim, timesteps = 10, latent_dim = 128, hid_factor = 2):
+    def LSTMAutoencoder(self, batch_size, timesteps, input_dim, hid_factor = 2):
 
         input_val = Input(shape=(timesteps, input_dim))
-        encoded = LSTM(latent_dim, return_sequences=True)(input_val)
+#        encoded = LSTM(latent_dim)(input_val)
+
+        encoded = LSTM(round(input_dim/hid_factor), return_sequences=True, stateful=True,
+             batch_input_shape=(batch_size, timesteps, input_dim))
 
         decoded = RepeatVector(timesteps)(encoded)
         decoded = LSTM(input_dim, return_sequences=True)(decoded)
@@ -58,7 +61,9 @@ class BuildAudioModel(object):
 
         encoder = Model(input=input_val, output=encoded)
 
-        autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy')
+        rms = RMSprop(lr=0.01)
+
+        autoencoder.compile(optimizer=rms, loss='mean_squared_error')
 
         return encoder, autoencoder
 
