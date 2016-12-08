@@ -6,20 +6,22 @@ import matplotlib.pyplot as plot
 import tables
 import time
 
-def train_generator(filepath, no_train, batch_size):
+def train_generator(filepath, no_train, batch_size, time_step):
     while 1:
         hdf5_file = tables.open_file(filepath, mode='r')
         for i in range(0,round(no_train/batch_size)):
-            data = hdf5_file.root.train[i*batch_size:i*batch_size+batch_size]
-            yield (data, data)
+            data = hdf5_file.root.train[i*batch_size:i*batch_size+batch_size+time_step]
+            data_step = data.reshape(batch_size, time_step, data.shape[1])
+            yield (data_step, data)
         hdf5_file.close()
 
-def validation_generator(filepath, no_valid, batch_size):
+def validation_generator(filepath, no_valid, batch_size, time_step):
     while 1:
         hdf5_file = tables.open_file(filepath, mode='r')
         for i in range(0, round(no_valid / batch_size)):
-            data = hdf5_file.root.valid[i*batch_size:i*batch_size+batch_size]
-            yield (data, data)
+            data = hdf5_file.root.valid[i*batch_size:i*batch_size+batch_size*time_step]
+            data_step = data.reshape(batch_size, time_step, data.shape[1])
+            yield (data_step, data)
         hdf5_file.close()
 
 def get_input_dim(filepath):
